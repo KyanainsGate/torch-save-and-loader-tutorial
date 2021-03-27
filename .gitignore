@@ -1,0 +1,16 @@
+__pycache__/
+/venv/
+/.idea/
+/.vscode/
+/data/
+/log/
+/MNIST/
+/weights/
+/botsu/
+/tmp/
+.ipynb_checkpoints
+*.csv
+*.pyc
+*.pth
+*.copy
+

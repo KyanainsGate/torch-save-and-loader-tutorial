@@ -1,0 +1,23 @@
+# Python ver. 3.6
+# Downlaod URL : https://download.pytorch.org/whl/cu100/torch_stable.html
+# torchvision-0.4.1%2Bcu100-cp36-cp36m-linux_x86_64.whl
+# -> wget https://download.pytorch.org/whl/cu100/torchvision-0.4.1%2Bcu100-cp36-cp36m-linux_x86_64.whl
+# torchvision-0.4.1%2Bcu100-cp36-cp36m-linux_x86_64.whl
+# -> wget https://download.pytorch.org/whl/cu100/torch-1.3.0%2Bcu100-cp36-cp36m-linux_x86_64.whl
+
+torchvision-0.4.1+cu100-cp36-cp36m-linux_x86_64.whl
+# torch-1.3.0+cu100-cp36-cp36m-linux_x86_64.whl
+
+# tesnsorflow==1.15.0 # Not GPU user
+tensorboard
+tesnsorflow-gpu==1.15.0 # GPU user
+matplotlib
+pandas
+opencv-python
+
+ipykernel
+notebook
+environment_kernels
+# jupyter # If not work, try sudo -H pip3 install jupyter again
+
+tqdm
