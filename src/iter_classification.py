@@ -8,9 +8,9 @@ import torch.backends.cudnn as cudnn
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
-import myutils
-from dataset_interface import DataInterface
-from model import Net
+from src import myutils
+from src.dataset_interface import DataInterface
+from src.model import Net
 
 # Set Seed
 torch.manual_seed(1234)
