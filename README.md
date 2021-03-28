@@ -6,8 +6,7 @@
     - Support multi device (GPU or NOT)
 - Now only MNIST training is available
 
-<!-- ![Visuzlization of training suspension and restart](/readme-doc/tensorboard_img.PNG) -->
-<!-- <img src="/readme-doc/tensorboard_img.PNG" width=50%> -->
+![Visuzlization of training suspension and restart](/readme-doc/tensorboard_img_50p.PNG)
 
 ## Details
 - Log directory handling
