@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 from torch.nn import init
 from torch.nn import functional as F
@@ -86,7 +87,7 @@ class CNN(nn.Module):
 
 
 class Net(nn.Module):
-    def __init__(self, inpt_channel=1):
+    def __init__(self, inpt_channel=1, otpt_class=10):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(inpt_channel, 32, 3)  # 28x28x32 -> 26x26x32
         self.conv2 = nn.Conv2d(32, 64, 3)  # 26x26x64 -> 24x24x64
@@ -94,14 +95,14 @@ class Net(nn.Module):
         self.dropout1 = nn.Dropout2d()
         self.fc1 = nn.Linear(12 * 12 * 64, 128)
         self.dropout2 = nn.Dropout2d()
-        self.fc2 = nn.Linear(128, 10)
+        self.fc2 = nn.Linear(128, otpt_class)
         self.metric = 0  # used for learning rate policy 'plateau'
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
         x = self.pool(F.relu(self.conv2(x)))
         x = self.dropout1(x)
-        x = x.view(-1, 12 * 12 * 64)
+        x = x.view(x.shape[0], -1)
         x = F.relu(self.fc1(x))
         x = self.dropout2(x)
         x = self.fc2(x)

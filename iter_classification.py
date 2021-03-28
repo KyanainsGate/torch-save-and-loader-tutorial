@@ -1,16 +1,16 @@
-import random
-import os
 import argparse
-import numpy as np
+import os
+import random
 
+import numpy as np
 import torch
-from torch.utils.tensorboard import SummaryWriter
 import torch.backends.cudnn as cudnn
 import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
 
 import myutils
 from dataset_interface import DataInterface
-from model import CNN, Net
+from model import Net
 
 # Set Seed
 torch.manual_seed(1234)
@@ -165,7 +165,8 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
                 "optimizer": optimizer.state_dict(),
             }
             myutils.save_checkpoint(state=state, is_best=now_best, save_path=logpath,
-                                    filename="checkpoint_" + str(epoch).zfill(4) + "_.pth")
+                                    filename=myutils._CHECKPOINT_PREFIX + str(epoch).zfill(
+                                        4) + myutils._CHECKPOINT_SUFFIX)
             pass  # End
         pass  # End epoch
     pass
