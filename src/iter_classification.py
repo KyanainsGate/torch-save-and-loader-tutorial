@@ -23,7 +23,7 @@ def parser():
     argument
     '''
     parser = argparse.ArgumentParser(description='PyTorch training')
-    parser.add_argument('--datapath', '-dp', type=str, default="./data",
+    parser.add_argument('--datapath', '-dp', type=str, default="../data",  # relative path by exec/
                         help='Data downloaded directory')
     parser.add_argument('--task', '-t', type=str, default="MNIST",
                         # parser.add_argument('--task', '-t', type=str, default="CIFAR10",
@@ -36,8 +36,8 @@ def parser():
                         help='learning rate (default: 0.01)')
     parser.add_argument('--batch', '-b', type=float, default=512,
                         help='batch size (default: 0.01)')
-    parser.add_argument('--logdir', '-log', type=str, default="./log",
-                        help='log directory (default: ./log)')
+    parser.add_argument('--logdir', '-log', type=str, default="../log",
+                        help='log directory (default: ../log)')
     parser.add_argument('--span', '-s', type=int, default=1,
                         help='log directory (default: 0.01)')
     args = parser.parse_args()
