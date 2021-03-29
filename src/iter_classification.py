@@ -1,8 +1,10 @@
 import argparse
 import os
 import random
+import time
 
 import numpy as np
+from tqdm import tqdm
 import torch
 import torch.backends.cudnn as cudnn
 import torch.optim as optim
@@ -83,9 +85,9 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
         epoch_val_corrects = 0  # epochの正解数
         epoch_val_loss = 0.0
 
-        print('-------------')
-        print('Epoch {}/{}'.format(epoch, num_epochs))
-        print('-------------')
+        # print('-------------')
+        # print('Epoch {}/{}'.format(epoch, num_epochs))
+        # print('-------------')
 
         # epochごとの訓練と検証のループ
         for phase in ['train', 'val']:
@@ -98,47 +100,52 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
             elif ((epoch - start_epoch) == 1) and (phase == 'train'):
                 print("Start optimization ...")
                 pass
+            # print(dataloaders_dict[phase])
+            # print(len(dataloaders_dict[phase]))
+            with tqdm(total=len(dataloaders_dict[phase])) as pbar:
+                pbar.set_description(f"Epoch[{epoch}/{num_epochs}] ({phase})")
+                # データローダーからminibatchずつ取り出すループ
+                for inputs, labels in dataloaders_dict[phase]:
+                    if inputs.size()[0] == 1:
+                        print('batch == 1 induce batch-norm error, so will be skipped')
+                        continue
 
-            # データローダーからminibatchずつ取り出すループ
-            for inputs, labels in dataloaders_dict[phase]:
-                if inputs.size()[0] == 1:
-                    print('batch == 1 induce batch-norm error, so will be skipped')
-                    continue
-
-                if phase == 'train':
-                    net.train()  # モデルを訓練モードに
-                    optimizer.zero_grad()
-
-                else:
-                    net.eval()  # モデルを検証モードに
-
-                # GPUが使えるならGPUにデータを送る
-                imges = inputs.to(device)
-                labels = labels.to(device)
-
-                # 順伝搬（forward）計算
-                with torch.set_grad_enabled(phase == 'train'):
-                    outputs = net(imges)
-                    loss = criterion(outputs, labels)
-                    _, preds = torch.max(outputs.data, 1)  # ラベルを予測
-                    total += labels.size(0)
-                    correct += (preds == labels).sum().item()
-
-                    # 訓練時はバックプロパゲーション
                     if phase == 'train':
-                        if ((epoch - start_epoch) == 0):
-                            pass
-                        else:
-                            loss.backward()  # 勾配の計算
-                            optimizer.step()  # Update of Adam optimaizer
-                        epoch_train_loss += loss.item() * inputs.size(0)  # Scalar値の抽出k関数==item()
-                        epoch_train_corrects += torch.sum(preds == labels.data)
+                        net.train()  # モデルを訓練モードに
+                        optimizer.zero_grad()
+
                     else:
-                        epoch_val_loss += loss.item() * inputs.size(0)
-                        epoch_val_corrects += torch.sum(preds == labels.data)
+                        net.eval()  # モデルを検証モードに
+
+                    # GPUが使えるならGPUにデータを送る
+                    imges = inputs.to(device)
+                    labels = labels.to(device)
+
+                    # 順伝搬（forward）計算
+                    with torch.set_grad_enabled(phase == 'train'):
+                        outputs = net(imges)
+                        loss = criterion(outputs, labels)
+                        _, preds = torch.max(outputs.data, 1)  # ラベルを予測
+                        total += labels.size(0)
+                        correct += (preds == labels).sum().item()
+
+                        # 訓練時はバックプロパゲーション
+                        if phase == 'train':
+                            if ((epoch - start_epoch) == 0):
+                                pass
+                            else:
+                                loss.backward()  # 勾配の計算
+                                optimizer.step()  # Update of Adam optimaizer
+                            epoch_train_loss += loss.item() * inputs.size(0)  # Scalar値の抽出k関数==item()
+                            epoch_train_corrects += torch.sum(preds == labels.data)
+                        else:
+                            epoch_val_loss += loss.item() * inputs.size(0)
+                            epoch_val_corrects += torch.sum(preds == labels.data)
+                            pass
                         pass
-                    pass
-                pass  # Minibatch end
+                    pbar.update(1)
+                    pass  # Minibatch end
+
             acc_dict[phase] = float(correct / total) * 100.
             pass  # Phase end
         epoch_train_percent = acc_dict["train"]

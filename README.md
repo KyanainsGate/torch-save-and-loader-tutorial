@@ -88,3 +88,4 @@ ipython kernel install --user --name <vir_env>
 ## References
 - https://github.com/YutaroOgawa/pytorch_advanced
 - https://qiita.com/fukuit/items/215ef75113d97560e599 (Downloading MNIST goes well)
+- https://qiita.com/tamahassam/items/6aa9d367e8c15bbd15a3
