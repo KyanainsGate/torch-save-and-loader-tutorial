@@ -48,6 +48,7 @@ def parser():
 
 def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_epochs, logpath, start_epoch=0):
     writer = SummaryWriter(logpath)  # Create Tensorboard  summary writer
+    start_time = time.time()
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print("Use device : ", device)
@@ -75,9 +76,11 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
     }
 
     # epochのループ
+    last_epoch_fin = time.time()
     for epoch in range(num_epochs + 1):
         if epoch < start_epoch:
             print('Skip until ' + str(start_epoch) + " (now:" + str(epoch) + ")")
+            last_epoch_fin = time.time()
             continue
             pass
         epoch_train_corrects = 0  # epochの正解数
@@ -85,25 +88,27 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
         epoch_val_corrects = 0  # epochの正解数
         epoch_val_loss = 0.0
 
-        # print('-------------')
-        # print('Epoch {}/{}'.format(epoch, num_epochs))
-        # print('-------------')
+        print('-------------')
+        print('Epoch {}/{}'.format(epoch, num_epochs))
 
         # epochごとの訓練と検証のループ
         for phase in ['train', 'val']:
             correct = 0
             total = 0
-
+            phase_str = phase
             if ((epoch - start_epoch) == 0) and (phase == 'train'):
                 print("As the first step, Optimization will NOT be done")
+                phase_str += " = NO BACKWARD ="
                 pass
             elif ((epoch - start_epoch) == 1) and (phase == 'train'):
                 print("Start optimization ...")
                 pass
+            else:
+                pass
             # print(dataloaders_dict[phase])
             # print(len(dataloaders_dict[phase]))
             with tqdm(total=len(dataloaders_dict[phase])) as pbar:
-                pbar.set_description(f"Epoch[{epoch}/{num_epochs}] ({phase})")
+                pbar.set_description(f"Epoch[{epoch}/{num_epochs}] ({phase_str})")
                 # データローダーからminibatchずつ取り出すループ
                 for inputs, labels in dataloaders_dict[phase]:
                     if inputs.size()[0] == 1:
@@ -175,7 +180,10 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
                                     filename=myutils._CHECKPOINT_PREFIX + str(epoch).zfill(
                                         4) + myutils._CHECKPOINT_SUFFIX)
             pass  # End
+        print('Elapsed time {:.2f}[s] (epoch: {})'.format(time.time() - last_epoch_fin, epoch))
+        last_epoch_fin = time.time()
         pass  # End epoch
+    print("Total elapsed : {:.2f}[s]".format(time.time() - start_time))
     pass
 
 
