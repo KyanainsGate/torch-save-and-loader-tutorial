@@ -69,11 +69,11 @@ conda activate <vir_env>
         python train.py -log ./tmp -b 1024  
         ```
 - Restart training from loading checkpoint
-    - Set correct directory
-    - Run restart script
+    - Run restart script, following is example
         ```bash
-        python restart.py
+        python restart.py --restore ./log/20190401/125759/checkpoint_0004_.pth
         ```
+    - When you want to same above, you can set laoding model path by coding `TrainingIter.get_load_weight(20190401, 125759, 4)` wihout command line arguments (`start.ipynb` show you example) .
 - Or, open `start.ipynb` by jupyter notebook
     ```bash
     jupyter notebook --port 5900 # Set port as you like
@@ -106,7 +106,7 @@ tensorboard --logdir=./ --port 8181 # Set port as you like
     ```
 
 ## Tips
-### Why score on training dataset looks a littel better when load once saved model and restart training.
+### Why score on training dataset looks a little better when load once saved model and restart training.
 - Since the summation of accuracy `epoch_train_percent` and parameter update `loss.backward()` conducted in each batch, the peformance of "optimizing (=ongoing) model" often worse than "optimized (=restored) model".
 - That's why the score difference between "ongoing" and "restored" model don`t come from loading failure and is not fixed in this project.
 

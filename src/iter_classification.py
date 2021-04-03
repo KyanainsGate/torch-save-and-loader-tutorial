@@ -2,6 +2,7 @@ import argparse
 import os
 import random
 import time
+import sys
 
 import numpy as np
 from tqdm import tqdm
@@ -40,7 +41,9 @@ def parser(feed_by_lst=None):
     parser.add_argument('--logdir', '-log', type=str, default="./log",
                         help='log directory (default: ./log)')
     parser.add_argument('--span', '-s', type=int, default=1,
-                        help='log directory (default: 0.01)')
+                        help='log directory (default: 1)')
+    parser.add_argument('--restore_path', '-r', type=str, default="",
+                        help='Directory to restore the model')
     if feed_by_lst is not None:
         args = parser.parse_args(feed_by_lst)
     else:
@@ -48,7 +51,7 @@ def parser(feed_by_lst=None):
     return args
 
 
-def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_epochs, logpath, start_epoch=0):
+def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_epochs, logpath, start_epoch=0, save_span=1):
     writer = SummaryWriter(logpath)  # Create Tensorboard  summary writer
     start_time = time.time()
 
@@ -170,7 +173,7 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
         writer.add_scalar("val/acc", epoch_val_percent, epoch)
 
         # 最後のネットワークを保存する
-        if epoch % 1 == 0:
+        if epoch % save_span == 0:
             print('Log Writing ...')
             state = {
                 "epoch": epoch,
@@ -191,9 +194,8 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
 class TrainingIter(object):
     def __init__(self, args:argparse.Namespace):
         self.dataloaders_dict, self.log_path, self.model, \
-        self.criterion, self.optimizer, self.max_epoch = self._parser2config(args)
+        self.criterion, self.optimizer, self.max_epoch, self.save_span, self.restore_path = self._parser2config(args)
         self.log = args.logdir
-        self.weight_path = ""
         pass
 
     def _parser2config(self, args_: argparse.Namespace):
@@ -222,22 +224,34 @@ class TrainingIter(object):
         lr = args_.lr
         optimizer = optim.Adam(net.parameters(), lr=lr)
 
-        return dataloaders_dict, log_path, net, criterion, optimizer, max_epoch
+        # Set save span
+        span_ = args_.span
+
+        # Set load model if you specified
+        restore_ = args_.restore_path
+
+        return dataloaders_dict, log_path, net, criterion, optimizer, max_epoch, span_, restore_
 
     def run(self):
         train_classification(net=self.model, dataloaders_dict=self.dataloaders_dict, criterion=self.criterion,
-                             optimizer=self.optimizer, logpath=self.log_path, num_epochs=self.max_epoch)
+                             optimizer=self.optimizer, logpath=self.log_path, num_epochs=self.max_epoch, )
         pass
 
-    def restart(self, load_logpath):
-        model_, optimizer_, epoch_ = myutils.load_checkpoint(model=self.model, optimizer=self.optimizer,
-                                                             filename=load_logpath, )
-        train_classification(net=model_, dataloaders_dict=self.dataloaders_dict, criterion=self.criterion,
+    def restart(self, load_logpath=""):
+        resore_path = load_logpath if load_logpath != "" else self.restore_path
+        if not self.restore_path == "":
+            model_, optimizer_, epoch_ = myutils.load_checkpoint(model=self.model, optimizer=self.optimizer,
+                                                             filename= self.restore_path)
+            train_classification(net=model_, dataloaders_dict=self.dataloaders_dict, criterion=self.criterion,
                              num_epochs=self.max_epoch,
                              optimizer=optimizer_, logpath=self.log_path, start_epoch=epoch_)
-        pass
+        else:
+            print("[ERROR] Set restore model path by the argumrent --restore ")
+            sys.exit()
+            pass
 
     def get_load_weight(self, yd: str, epoch: int, hms="", zero_fill=4):
         date_ = myutils.get_timestamped_weight_path(yd=yd, hms=hms, epoch=epoch, zero_fill=zero_fill)
-        self.weight_path = os.path.join(self.log, date_)
-        return self.weight_path
+        self.restore_path = os.path.join(self.log, date_)
+        return self.restore_path
+        # pass

@@ -105,10 +105,6 @@ def save_checkpoint(state: dict, is_best: bool, save_path: str, filename: str, t
     pass
 
 
-def save_checkpoint_autoname():
-    pass
-
-
 def get_timestamped_weight_path(yd: str, epoch: int, hms="", zero_fill=4):
     if hms != "":
         ret_ = os.path.join(yd, hms)
