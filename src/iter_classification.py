@@ -20,7 +20,7 @@ np.random.seed(1234)
 random.seed(1234)
 
 
-def parser(feed_by_lst=[]):
+def parser(feed_by_lst=None):
     '''
     argument
     '''
@@ -28,7 +28,6 @@ def parser(feed_by_lst=[]):
     parser.add_argument('--datapath', '-dp', type=str, default="./data",  # relative path by exec/
                         help='Data downloaded directory')
     parser.add_argument('--task', '-t', type=str, default="MNIST",
-                        # parser.add_argument('--task', '-t', type=str, default="CIFAR10",
                         help='Classification dataset')
     parser.add_argument('--threading', '-thr', type=int, default=5,
                         help='CPU thread number for data loading')
@@ -42,7 +41,10 @@ def parser(feed_by_lst=[]):
                         help='log directory (default: ./log)')
     parser.add_argument('--span', '-s', type=int, default=1,
                         help='log directory (default: 0.01)')
-    args = parser.parse_args(feed_by_lst)
+    if feed_by_lst is not None:
+        args = parser.parse_args(feed_by_lst)
+    else:
+        args = parser.parse_args()
     return args
 
 
@@ -219,8 +221,7 @@ class TrainingIter(object):
 
         # Set optimizer
         lr = args_.lr
-        # optimizer = optim.Adam(net.parameters(), lr=lr)
-        optimizer = optim.SGD(net.parameters(), lr=lr)
+        optimizer = optim.Adam(net.parameters(), lr=lr)
 
         return dataloaders_dict, log_path, net, criterion, optimizer, max_epoch
 
