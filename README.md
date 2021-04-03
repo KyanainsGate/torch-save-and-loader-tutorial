@@ -107,7 +107,7 @@ tensorboard --logdir=./ --port 8181 # Set port as you like
 
 ## Tips
 ### Why score on training dataset looks better when load once saved model and restart training.
-- Since updating parameters by `loss.backward()` and the accuracy `` for each batch, 
+- Since updating parameters by `loss.backward()` and the accuracy `epoch_train_percent` in each batch, the peformance of "optimizing (=ongoing) model" often worse than "optimized (=restored) model".
 - 
 
 ## References
