@@ -110,7 +110,7 @@ tensorboard --logdir=./ --port 8181 # Set port as you like
 - Since the summation of accuracy `epoch_train_percent` and parameter update `loss.backward()` conducted in each batch, the peformance of "optimizing (=ongoing) model" often worse than "optimized (=restored) model".
 - That's why the score difference between "ongoing" and "restored" model don`t come from loading failure and is not fixed in this project.
 ---
-![mismatch detail](/readme-doc/why_trainig_curve_mismatch.png)
+![mismatch detail](/readme-doc/why_trainig_curve_mismatch_50p.png)
 ---
 ## References
 - Argparse handling : https://qiita.com/uenonuenon/items/09fa620426b4c5d4acf9
