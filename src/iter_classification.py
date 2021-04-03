@@ -190,7 +190,6 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
 
 class TrainingIter(object):
     def __init__(self, args:argparse.Namespace):
-        # args = parser()
         self.dataloaders_dict, self.log_path, self.model, \
         self.criterion, self.optimizer, self.max_epoch = self._parser2config(args)
         self.log = args.logdir
