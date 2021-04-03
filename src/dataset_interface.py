@@ -52,7 +52,6 @@ class DataInterface(object):
         else:
             print('Because Vision dataset was not found, Use MNIST')
             pass
-
         self._train_dataloader = DataLoader(self.trainset, batch_size=batch_size, shuffle=False, num_workers=num_works)
         self.val_dataloader = DataLoader(self.testset, batch_size=batch_size, shuffle=False, num_workers=num_works)
 
