@@ -20,12 +20,12 @@ np.random.seed(1234)
 random.seed(1234)
 
 
-def parser():
+def parser(feed_by_lst=[]):
     '''
     argument
     '''
     parser = argparse.ArgumentParser(description='PyTorch training')
-    parser.add_argument('--datapath', '-dp', type=str, default="../data",  # relative path by exec/
+    parser.add_argument('--datapath', '-dp', type=str, default="./data",  # relative path by exec/
                         help='Data downloaded directory')
     parser.add_argument('--task', '-t', type=str, default="MNIST",
                         # parser.add_argument('--task', '-t', type=str, default="CIFAR10",
@@ -36,13 +36,13 @@ def parser():
                         help='number of epochs to train (default: 2)')
     parser.add_argument('--lr', '-lr', type=float, default=1e-4,
                         help='learning rate (default: 0.01)')
-    parser.add_argument('--batch', '-b', type=float, default=512,
+    parser.add_argument('--batch', '-b', type=int, default=512,
                         help='batch size (default: 0.01)')
-    parser.add_argument('--logdir', '-log', type=str, default="../log",
-                        help='log directory (default: ../log)')
+    parser.add_argument('--logdir', '-log', type=str, default="./log",
+                        help='log directory (default: ./log)')
     parser.add_argument('--span', '-s', type=int, default=1,
                         help='log directory (default: 0.01)')
-    args = parser.parse_args()
+    args = parser.parse_args(feed_by_lst)
     return args
 
 
@@ -105,8 +105,6 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
                 pass
             else:
                 pass
-            # print(dataloaders_dict[phase])
-            # print(len(dataloaders_dict[phase]))
             with tqdm(total=len(dataloaders_dict[phase])) as pbar:
                 pbar.set_description(f"Epoch[{epoch}/{num_epochs}] ({phase_str})")
                 # データローダーからminibatchずつ取り出すループ
@@ -171,6 +169,7 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
 
         # 最後のネットワークを保存する
         if epoch % 1 == 0:
+            print('Log Writing ...')
             state = {
                 "epoch": epoch,
                 "state_dict": net.state_dict(),
@@ -188,8 +187,8 @@ def train_classification(net, dataloaders_dict: dict, criterion, optimizer, num_
 
 
 class TrainingIter(object):
-    def __init__(self):
-        args = parser()
+    def __init__(self, args:argparse.Namespace):
+        # args = parser()
         self.dataloaders_dict, self.log_path, self.model, \
         self.criterion, self.optimizer, self.max_epoch = self._parser2config(args)
         self.log = args.logdir
@@ -220,7 +219,8 @@ class TrainingIter(object):
 
         # Set optimizer
         lr = args_.lr
-        optimizer = optim.Adam(net.parameters(), lr=lr)
+        # optimizer = optim.Adam(net.parameters(), lr=lr)
+        optimizer = optim.SGD(net.parameters(), lr=lr)
 
         return dataloaders_dict, log_path, net, criterion, optimizer, max_epoch
 
